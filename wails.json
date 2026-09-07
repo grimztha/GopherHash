@@ -1,0 +1,20 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "gopherhash",
+  "outputfilename": "gopherhash",
+  "frontend:install": "npm install",
+  "frontend:build": "npm run build",
+  "frontend:dev:watcher": "npm run dev",
+  "frontend:dev:serverUrl": "auto",
+  "info": {
+    "companyName": "GopherHash",
+    "productName": "GopherHash",
+    "productVersion": "1.0.0",
+    "copyright": "Copyright © 2026 sthao42",
+    "comments": "High-Performance Cryptographic File Checksum & Verification Utility"
+  },
+  "author": {
+    "name": "sthao42",
+    "email": "sirgrimz@proton.me"
+  }
+}

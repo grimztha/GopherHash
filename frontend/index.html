@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>GopherHash - High-Performance File Checksum & Verification</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/src/assets/images/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Application Header -->
+        <header class="app-header">
+            <div class="brand">
+                <div class="brand-icon">
+                    <img src="/src/assets/images/GopherHash.png" alt="GopherHash Logo" class="brand-logo-img">
+                </div>
+                <div class="brand-text">
+                    <div class="brand-title-row">
+                        <div class="brand-title">GopherHash</div>
+                        <span class="brand-version" id="app-version">v1.0.0</span>
+                    </div>
+                    <div class="brand-subtitle">High-performance cryptographic file hashing & verification in Go</div>
+                </div>
+            </div>
+            <button class="theme-toggle-btn" id="theme-toggle" type="button" title="Toggle Dark / Light Theme" aria-label="Toggle theme">
+                <div class="theme-icon-track">
+                    <svg class="theme-icon icon-sun" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="theme-icon icon-moon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </div>
+                <span class="theme-label" id="theme-label">Dark</span>
+            </button>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="tabs-nav">
+            <button class="nav-tab active" id="hash-tab" data-tab="hash-content">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="4" y1="9" x2="20" y2="9"></line>
+                    <line x1="4" y1="15" x2="20" y2="15"></line>
+                    <line x1="10" y1="3" x2="8" y2="21"></line>
+                    <line x1="16" y1="3" x2="14" y2="21"></line>
+                </svg>
+                <span>Hash Generator</span>
+            </button>
+            <button class="nav-tab" id="compare-tab" data-tab="compare-content">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="4" width="8" height="16" rx="2"></rect>
+                    <rect x="14" y="4" width="8" height="16" rx="2"></rect>
+                    <path d="M6 12h.01M18 12h.01"></path>
+                </svg>
+                <span>Compare Two Files</span>
+            </button>
+            <button class="nav-tab" id="verify-tab" data-tab="verify-content">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                <span>Verify Checksums</span>
+            </button>
+        </nav>
+
+        <!-- Main Workspace -->
+        <main class="main-workspace">
+            <!-- Tab 1: Hash Generator -->
+            <section class="tab-pane active" id="hash-content">
+                <!-- Drop zone / File selector -->
+                <div class="glass-card drop-zone" id="hash-drop-zone">
+                    <div class="drop-icon">
+                        <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="12" y1="18" x2="12" y2="12"></line>
+                            <line x1="9" y1="15" x2="12" y2="12"></line>
+                            <line x1="15" y1="15" x2="12" y2="12"></line>
+                        </svg>
+                    </div>
+                    <div class="drop-text">
+                        <span class="drop-prompt">Drag and drop file here</span>
+                        <span class="drop-sub">or click the button below to browse</span>
+                    </div>
+                    <div class="drop-actions">
+                        <button class="btn btn-primary" id="select-file-btn">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                            <span>Browse File</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Selected File Info Banner (hidden until file chosen) -->
+                <div class="file-info-banner hidden" id="file-info-banner">
+                    <div class="file-info-meta">
+                        <div class="file-info-icon">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                                <polyline points="13 2 13 9 20 9"></polyline>
+                            </svg>
+                        </div>
+                        <div class="file-info-details">
+                            <div class="file-name" id="file-name-display">No file selected</div>
+                            <div class="file-path-text" id="file-path">No file selected</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-ghost btn-sm" id="clear-btn" title="Clear selection">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                        <span>Clear</span>
+                    </button>
+                </div>
+
+                <!-- Hash Control Bar -->
+                <div class="control-bar">
+                    <div class="control-group">
+                        <label class="control-label" for="algorithm-select">Hash Algorithm</label>
+                        <select id="algorithm-select" class="select-field">
+                            <option value="all">All Algorithms (SHA-256, MD5, SHA-1, SHA-512, BLAKE3, CRC32)</option>
+                            <option value="sha256" selected>SHA-256 (Recommended)</option>
+                            <option value="blake3">BLAKE3 (Ultra Fast & Secure)</option>
+                            <option value="crc32">CRC32 (Checksum / Fast)</option>
+                            <option value="md5">MD5 (Legacy / Fast)</option>
+                            <option value="sha1">SHA-1 (Legacy)</option>
+                            <option value="sha512">SHA-512 (High Security)</option>
+                        </select>
+                    </div>
+                    <div class="control-actions">
+                        <button class="btn btn-primary" id="compute-btn">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polygon points="10 8 16 12 10 16 10 8"></polygon>
+                            </svg>
+                            <span id="compute-btn-text">Generate Hash</span>
+                        </button>
+                        <button class="btn btn-secondary hidden" id="copy-all-btn">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            <span>Copy All</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Hash Results Section -->
+                <div class="section-title">
+                    <span>Generated Hashes</span>
+                    <span class="badge" id="results-count-badge">0 results</span>
+                </div>
+                <div class="hash-results-container" id="hash-results-list">
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <line x1="4" y1="9" x2="20" y2="9"></line>
+                                <line x1="4" y1="15" x2="20" y2="15"></line>
+                                <line x1="10" y1="3" x2="8" y2="21"></line>
+                                <line x1="16" y1="3" x2="14" y2="21"></line>
+                            </svg>
+                        </div>
+                        <div class="empty-title">No Hashes Generated Yet</div>
+                        <div class="empty-desc">Select a file and click "Generate Hash" to compute checksums.</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab 2: Compare Two Files (NEW FEATURE) -->
+            <section class="tab-pane" id="compare-content">
+                <div class="compare-grid">
+                    <!-- File 1 Card -->
+                    <div class="glass-card compare-card" id="compare-drop-1">
+                        <div class="compare-card-header">
+                            <div class="card-tag tag-blue">File A (Reference)</div>
+                            <button class="btn btn-ghost btn-xs" id="clear-compare-1-btn" title="Clear File A">Clear</button>
+                        </div>
+                        <div class="compare-card-body">
+                            <div class="file-avatar">
+                                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                </svg>
+                            </div>
+                            <div class="compare-meta">
+                                <div class="compare-file-name" id="compare-name-1">No file selected</div>
+                                <div class="compare-file-size" id="compare-size-1">Drop file here or browse</div>
+                            </div>
+                        </div>
+                        <div class="compare-card-footer">
+                            <button class="btn btn-outline btn-full" id="browse-compare-1-btn">
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                                </svg>
+                                <span>Choose File A</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Comparison Divider / Icon -->
+                    <div class="compare-divider">
+                        <div class="compare-vs-badge">VS</div>
+                    </div>
+
+                    <!-- File 2 Card -->
+                    <div class="glass-card compare-card" id="compare-drop-2">
+                        <div class="compare-card-header">
+                            <div class="card-tag tag-purple">File B (Comparison)</div>
+                            <button class="btn btn-ghost btn-xs" id="clear-compare-2-btn" title="Clear File B">Clear</button>
+                        </div>
+                        <div class="compare-card-body">
+                            <div class="file-avatar">
+                                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                </svg>
+                            </div>
+                            <div class="compare-meta">
+                                <div class="compare-file-name" id="compare-name-2">No file selected</div>
+                                <div class="compare-file-size" id="compare-size-2">Drop file here or browse</div>
+                            </div>
+                        </div>
+                        <div class="compare-card-footer">
+                            <button class="btn btn-outline btn-full" id="browse-compare-2-btn">
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                                </svg>
+                                <span>Choose File B</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compare Control Bar -->
+                <div class="control-bar">
+                    <div class="control-group">
+                        <label class="control-label" for="compare-algo-select">Comparison Algorithm</label>
+                        <select id="compare-algo-select" class="select-field">
+                            <option value="sha256" selected>SHA-256 (Highly Recommended)</option>
+                            <option value="blake3">BLAKE3 (Ultra Fast & Secure)</option>
+                            <option value="crc32">CRC32 (Checksum / Non-crypto)</option>
+                            <option value="md5">MD5 (Standard)</option>
+                            <option value="sha1">SHA-1</option>
+                            <option value="sha512">SHA-512 (Ultra-high Bit Collision Resistance)</option>
+                        </select>
+                    </div>
+                    <div class="control-actions">
+                        <button class="btn btn-primary" id="compare-exec-btn">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="16 3 21 3 21 8"></polyline>
+                                <line x1="4" y1="20" x2="21" y2="3"></line>
+                                <polyline points="21 16 21 21 16 21"></polyline>
+                                <line x1="15" y1="15" x2="21" y2="21"></line>
+                                <line x1="4" y1="4" x2="9" y2="9"></line>
+                            </svg>
+                            <span>Compare Files</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Comparison Result Banner -->
+                <div id="compare-result-container">
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                        </div>
+                        <div class="empty-title">Select Two Files to Compare</div>
+                        <div class="empty-desc">Choose File A and File B above to check if their cryptographic checksums match.</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab 3: Verify Checksums -->
+            <section class="tab-pane" id="verify-content">
+                <!-- Sub-tabs for Single vs Batch -->
+                <div class="sub-tab-bar">
+                    <button class="sub-tab active" id="verify-batch-tab">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        <span>Batch Checksum File / List</span>
+                    </button>
+                    <button class="sub-tab" id="verify-single-tab">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                        <span>Verify Single File</span>
+                    </button>
+                </div>
+
+                <!-- Batch Verification View -->
+                <div class="verify-section-panel active" id="verify-batch-panel">
+                    <div class="glass-card">
+                        <div class="card-header-bar">
+                            <div class="card-header-title">Checksum File Input</div>
+                            <div class="card-header-actions">
+                                <button class="btn btn-secondary btn-sm" id="load-checksum-file-btn">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                                    </svg>
+                                    <span>Browse Checksum File</span>
+                                </button>
+                                <button class="btn btn-ghost btn-sm" id="clear-checksum-input-btn">Clear</button>
+                            </div>
+                        </div>
+                        <div class="field-container">
+                            <textarea id="hash-input" rows="5" class="textarea-field" placeholder="Paste sha256sum, b3sum, md5sum, sfv, or OpenSSL format hashes here...&#10;Example:&#10;e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  filename.iso&#10;SHA256 (filename.iso) = e3b0c442...&#10;BLAKE3 (filename.iso) = d74981ef..."></textarea>
+                        </div>
+                        <div class="card-footer-bar">
+                            <span class="hint-text">Supports standard sha256sum/b3sum/md5sum/sfv and BSD/OpenSSL checksum formats</span>
+                            <button class="btn btn-primary" id="verify-btn">
+                                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                </svg>
+                                <span>Verify Checksum List</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Batch Verification Results -->
+                    <div class="section-title">
+                        <span>Verification Results</span>
+                        <div class="badge-group" id="verify-summary-badges">
+                            <span class="badge badge-neutral" id="badge-total">0 total</span>
+                            <span class="badge badge-success hidden" id="badge-pass">0 passed</span>
+                            <span class="badge badge-danger hidden" id="badge-fail">0 failed</span>
+                            <span class="badge badge-warning hidden" id="badge-err">0 errors</span>
+                        </div>
+                    </div>
+
+                    <div class="results-table-card glass-card" id="verify-results-container">
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <div class="empty-title">No Verification Performed Yet</div>
+                            <div class="empty-desc">Paste hashes or load a checksum file above and click Verify.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Single File Verification View -->
+                <div class="verify-section-panel" id="verify-single-panel">
+                    <div class="glass-card">
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <label class="control-label" for="manual-hash">Expected Known Hash</label>
+                                <input type="text" id="manual-hash" class="input-field mono-text" placeholder="Paste the known MD5, SHA-1, SHA-256, SHA-512, BLAKE3, or CRC32 hash value here">
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label" for="manual-algo">Hash Algorithm</label>
+                                <select id="manual-algo" class="select-field">
+                                    <option value="sha256" selected>SHA-256</option>
+                                    <option value="blake3">BLAKE3</option>
+                                    <option value="crc32">CRC32</option>
+                                    <option value="md5">MD5</option>
+                                    <option value="sha1">SHA-1</option>
+                                    <option value="sha512">SHA-512</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">File to Check</label>
+                                <div class="input-action-row">
+                                    <input type="text" id="manual-file" class="input-field" placeholder="Select file to verify">
+                                    <button class="btn btn-secondary" id="browse-btn">Browse</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer-bar">
+                            <span></span>
+                            <button class="btn btn-primary" id="verify-single-btn">
+                                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                <span>Verify Single File</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Single Verification Result Container -->
+                    <div id="single-verify-result-container"></div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Toast Notifications Container -->
+        <div id="toast-container" class="toast-container" aria-live="polite"></div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+</body>
+</html>

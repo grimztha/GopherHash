@@ -1,0 +1,150 @@
+name: Build & Package (Windows & macOS)
+
+on:
+  push:
+    branches: [ master, main ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ master, main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    name: Build Windows (Portable & Installer)
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+          cache: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install NSIS
+        run: choco install nsis -y --no-progress
+
+      - name: Install Wails CLI
+        run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
+
+      - name: Build Windows Application (NSIS + Binary)
+        shell: pwsh
+        run: |
+          wails build -platform windows/amd64 -nsis
+
+      - name: Package Windows Portable Zip
+        shell: pwsh
+        run: |
+          Compress-Archive -Path build/bin/gopherhash.exe -DestinationPath build/bin/GopherHash-windows-amd64-portable.zip
+
+      - name: Upload Windows Portable Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: GopherHash-Windows-Portable
+          path: build/bin/GopherHash-windows-amd64-portable.zip
+
+      - name: Upload Windows Installer Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: GopherHash-Windows-Installer
+          path: build/bin/*installer.exe
+
+  build-macos:
+    name: Build macOS (Universal Portable App & DMG)
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+          cache: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Wails CLI
+        run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
+
+      - name: Install create-dmg
+        run: brew install create-dmg || true
+
+      - name: Build macOS Universal App
+        run: |
+          wails build -platform darwin/universal
+
+      - name: Package macOS Portable Zip
+        run: |
+          cd build/bin
+          zip -r -y GopherHash-macos-universal-portable.zip gopherhash.app
+
+      - name: Create macOS DMG Disk Image
+        run: |
+          cd build/bin
+          if command -v create-dmg &> /dev/null; then
+            create-dmg \
+              --volname "GopherHash" \
+              --window-pos 200 120 \
+              --window-size 600 400 \
+              --icon-size 100 \
+              --icon "gopherhash.app" 175 120 \
+              --hide-extension "gopherhash.app" \
+              --app-drop-link 425 120 \
+              "GopherHash-macos-universal.dmg" \
+              "gopherhash.app" || true
+          fi
+
+      - name: Upload macOS Portable Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: GopherHash-macOS-Universal-Portable
+          path: build/bin/GopherHash-macos-universal-portable.zip
+
+      - name: Upload macOS DMG Artifact
+        uses: actions/upload-artifact@v4
+        if: hashFiles('build/bin/*.dmg') != ''
+        with:
+          name: GopherHash-macOS-Universal-DMG
+          path: build/bin/*.dmg
+
+  release:
+    name: Publish GitHub Release
+    needs: [build-windows, build-macos]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Prepare Release Assets
+        run: |
+          mkdir -p release-assets
+          find artifacts -type f \( -name "*.zip" -o -name "*.exe" -o -name "*.dmg" \) -exec cp {} release-assets/ \;
+          ls -la release-assets/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release-assets/*
+          generate_release_notes: true
+          draft: false
+          prerelease: false

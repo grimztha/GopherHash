@@ -1,0 +1,102 @@
+# ==============================================================================
+# GopherHash .gitignore
+# ==============================================================================
+
+# --- Build & Binary Outputs ---
+build/bin/
+bin/
+dist/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.syso
+*.dmg
+*.app/
+*.iso
+*.zip
+*.tar.gz
+
+# --- Go Artifacts & Test Outputs ---
+*.test
+*.out
+cover.out
+coverage.txt
+profile.out
+*.prof
+
+# --- Frontend & Node.js Artifacts ---
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/dist-ssr/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.pnpm-debug.log*
+.npm/
+
+# --- Environment, Credentials & Secrets ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_ed25519
+credentials.json
+secrets.json
+*.kdbx
+
+# --- IDEs & Editors ---
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+*.bak
+
+# --- Agent & AI Workspaces ---
+.agents/
+
+# --- Operating System Files ---
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Linux
+.directory
+.fuse_hidden*
+.Trash-*
+
+# --- Temporary & Scratch Files ---
+tmp/
+temp/
+scratch/
+*.tmp
+*.log
