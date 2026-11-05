@@ -9,7 +9,7 @@
   "info": {
     "companyName": "GopherHash",
     "productName": "GopherHash",
-    "productVersion": "1.0.0",
+    "productVersion": "1.1.0",
     "copyright": "Copyright © 2026 sthao42",
     "comments": "High-Performance Cryptographic File Checksum & Verification Utility"
   },

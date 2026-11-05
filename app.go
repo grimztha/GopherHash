@@ -14,7 +14,7 @@ import (
 
 // Version defines the application semantic version.
 // This can be overridden at compile-time via: -ldflags "-X main.Version=x.y.z"
-var Version = "1.0.0"
+var Version = "1.1.0"
 
 // MaxTextFileSize defines the maximum allowed size (10 MB) for reading text/manifest files into memory.
 const MaxTextFileSize int64 = 10 * 1024 * 1024
