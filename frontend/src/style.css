@@ -133,105 +133,230 @@ body {
 }
 
 /* ==========================================================================
-   Header Bar
+   Unified Modern Title Bar & Header
    ========================================================================== */
-.app-header {
+.app-titlebar {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 24px;
+    height: 42px;
     background: var(--bg-header);
     border-bottom: 1px solid var(--border-color);
-    box-shadow: var(--shadow-sm);
+    padding: 0 0 0 14px;
+    position: relative;
+    z-index: 100;
+    user-select: none;
+    -webkit-user-select: none;
+    --wails-draggable: drag;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+    flex-shrink: 0;
 }
 
-.brand {
+/* Brand identity area */
+.titlebar-brand {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 8px;
+    --wails-draggable: drag;
+    flex-shrink: 0;
 }
 
 .brand-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: var(--shadow-glow-cyan);
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.25);
     overflow: hidden;
-    background: rgba(19, 28, 46, 0.6);
+    background: var(--brand-icon-bg);
+    border: 1px solid var(--border-subtle);
     flex-shrink: 0;
+    pointer-events: none;
 }
 
 .brand-logo-img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    border-radius: 12px;
+    object-fit: contain;
+    border-radius: 5px;
     display: block;
 }
 
-.brand-title-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
 .brand-title {
-    font-size: 16px;
-    font-weight: 700;
+    font-size: 13px;
+    font-weight: 600;
     letter-spacing: -0.01em;
+    color: var(--text-primary);
+    pointer-events: none;
     display: flex;
     align-items: center;
-    color: var(--text-primary);
 }
 
 .brand-version {
-    font-size: 11px;
-    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-family: var(--font-mono);
     font-weight: 500;
-    padding: 1px 7px;
+    padding: 1px 6px;
     border-radius: 999px;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    color: var(--cyan);
+    background: var(--badge-neutral-bg);
+    border: 1px solid var(--border-color);
+    color: var(--accent-cyan);
     letter-spacing: 0.02em;
     line-height: 1.4;
+    pointer-events: none;
+}
+
+.titlebar-sep {
+    font-size: 10px;
+    color: var(--text-muted);
+    opacity: 0.6;
+    margin: 0 2px;
+    pointer-events: none;
 }
 
 .brand-subtitle {
-    font-size: 11px;
+    font-size: 12px;
+    font-weight: 400;
     color: var(--text-muted);
+    letter-spacing: -0.005em;
+    pointer-events: none;
+}
+
+@media (max-width: 860px) {
+    .brand-subtitle,
+    .titlebar-sep {
+        display: none;
+    }
+}
+
+/* Center draggable expanse */
+.titlebar-drag-region {
+    flex: 1;
+    height: 100%;
+    --wails-draggable: drag;
+    min-width: 20px;
+}
+
+/* Windows Controls (Minimize, Maximize / Restore, Close) */
+.window-controls {
+    display: flex;
+    align-items: stretch;
+    height: 100%;
+    --wails-draggable: no-drag;
+}
+
+.win-btn {
+    width: 46px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-secondary);
+    cursor: default;
+    transition: background-color 0.15s ease, color 0.15s ease;
+    padding: 0;
+    margin: 0;
+    user-select: none;
+    -webkit-user-select: none;
+    --wails-draggable: no-drag;
+}
+
+.win-btn svg {
+    pointer-events: none;
+}
+
+.win-btn-min:hover,
+.win-btn-max:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+}
+
+[data-theme="light"] .win-btn-min:hover,
+[data-theme="light"] .win-btn-max:hover {
+    background-color: rgba(0, 0, 0, 0.06);
+    color: var(--text-primary);
+}
+
+.win-btn-min:active,
+.win-btn-max:active {
+    background-color: rgba(255, 255, 255, 0.14);
+}
+
+[data-theme="light"] .win-btn-min:active,
+[data-theme="light"] .win-btn-max:active {
+    background-color: rgba(0, 0, 0, 0.12);
+}
+
+.win-btn-close:hover {
+    background-color: #e81123 !important;
+    color: #ffffff !important;
+}
+
+.win-btn-close:active {
+    background-color: #c42b1c !important;
+    color: #ffffff !important;
 }
 
 /* ==========================================================================
-   Theme Toggle Button
+   Navigation Tabs Bar (Menu Bar)
    ========================================================================== */
-.theme-toggle-btn {
+.tabs-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0 16px;
+    height: 48px;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    --wails-draggable: no-drag;
+}
+
+.tabs-container {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 6px 14px;
-    background: var(--bg-surface);
+}
+
+.tabs-actions {
+    display: flex;
+    align-items: center;
+    --wails-draggable: no-drag;
+}
+
+/* Theme toggle button in menu bar */
+.theme-toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    height: 30px;
+    padding: 0 13px;
+    background: var(--bg-card);
     border: 1px solid var(--border-color);
-    border-radius: 20px;
+    border-radius: 15px;
     color: var(--text-secondary);
     font-family: var(--font-sans);
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 500;
     cursor: pointer;
     box-shadow: var(--shadow-sm);
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     user-select: none;
     outline: none;
+    --wails-draggable: no-drag;
 }
 
 .theme-toggle-btn:hover {
     color: var(--text-primary);
     border-color: var(--accent-cyan);
     box-shadow: var(--shadow-glow-cyan);
-    transform: translateY(-1px);
+    transform: translateY(-0.5px);
 }
 
 .theme-toggle-btn:active {
@@ -240,8 +365,8 @@ body {
 
 .theme-icon-track {
     position: relative;
-    width: 16px;
-    height: 16px;
+    width: 15px;
+    height: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -280,54 +405,57 @@ body {
 
 .theme-label {
     font-size: 12px;
-    letter-spacing: 0.02em;
-}
-
-/* ==========================================================================
-   Navigation Tabs
-   ========================================================================== */
-.tabs-nav {
-    display: flex;
-    background: var(--bg-surface);
-    border-bottom: 1px solid var(--border-color);
-    padding: 0 20px;
-    gap: 6px;
+    letter-spacing: 0.01em;
 }
 
 .nav-tab {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 12px 18px;
+    height: 32px;
+    padding: 0 14px;
     background: transparent;
-    border: none;
-    border-bottom: 2px solid transparent;
+    border: 1px solid transparent;
+    border-radius: 8px;
     color: var(--text-secondary);
     font-family: var(--font-sans);
     font-size: 13px;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    outline: none;
+    user-select: none;
 }
 
 .nav-tab:hover:not(.active) {
     color: var(--text-primary);
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--hover-overlay);
+    border-color: var(--border-subtle);
 }
 
 .nav-tab.active {
     color: var(--accent-cyan);
-    border-bottom-color: var(--accent-cyan);
+    background: rgba(56, 189, 248, 0.1);
+    border-color: rgba(56, 189, 248, 0.3);
     font-weight: 600;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.15);
+}
+
+[data-theme="light"] .nav-tab.active {
+    background: rgba(2, 132, 199, 0.08);
+    border-color: rgba(2, 132, 199, 0.25);
+    color: var(--accent-cyan);
+    box-shadow: 0 1px 4px rgba(2, 132, 199, 0.1);
 }
 
 .nav-tab svg {
-    transition: transform 0.2s ease;
+    transition: transform 0.2s ease, stroke 0.2s ease;
+    flex-shrink: 0;
 }
 
 .nav-tab.active svg {
     stroke: var(--accent-cyan);
-    transform: scale(1.08);
+    transform: scale(1.05);
 }
 
 /* ==========================================================================

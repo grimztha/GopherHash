@@ -11,67 +11,97 @@
 </head>
 <body>
     <div id="app">
-        <!-- Application Header -->
-        <header class="app-header">
-            <div class="brand">
+        <!-- Unified Modern Title Bar & Header -->
+        <header class="app-titlebar" id="app-titlebar">
+            <!-- Left: Brand identity -->
+            <div class="titlebar-brand">
                 <div class="brand-icon">
                     <img src="/src/assets/images/GopherHash.png" alt="GopherHash Logo" class="brand-logo-img">
                 </div>
-                <div class="brand-text">
-                    <div class="brand-title-row">
-                        <div class="brand-title">GopherHash</div>
-                        <span class="brand-version" id="app-version">v1.0.0</span>
-                    </div>
-                    <div class="brand-subtitle">High-performance cryptographic file hashing & verification in Go</div>
-                </div>
+                <div class="brand-title">GopherHash</div>
+                <span class="brand-version" id="app-version">v1.1.0</span>
+                <span class="titlebar-sep">•</span>
+                <span class="brand-subtitle">File Checksum &amp; Verification</span>
             </div>
-            <button class="theme-toggle-btn" id="theme-toggle" type="button" title="Toggle Dark / Light Theme" aria-label="Toggle theme">
-                <div class="theme-icon-track">
-                    <svg class="theme-icon icon-sun" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="5"></circle>
-                        <line x1="12" y1="1" x2="12" y2="3"></line>
-                        <line x1="12" y1="21" x2="12" y2="23"></line>
-                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                        <line x1="1" y1="12" x2="3" y2="12"></line>
-                        <line x1="21" y1="12" x2="23" y2="12"></line>
-                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+
+            <!-- Center: Draggable Window Region -->
+            <div class="titlebar-drag-region"></div>
+
+            <!-- Right: Window Control Buttons (Minimize, Maximize / Restore, Close) -->
+            <div class="window-controls">
+                <button class="win-btn win-btn-min" id="window-min-btn" type="button" title="Minimize" aria-label="Minimize">
+                    <svg viewBox="0 0 12 12" width="10" height="10">
+                        <rect y="5.5" width="10" height="1" fill="currentColor" rx="0.5"></rect>
                     </svg>
-                    <svg class="theme-icon icon-moon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </button>
+                <button class="win-btn win-btn-max" id="window-max-btn" type="button" title="Maximize" aria-label="Maximize">
+                    <svg class="icon-maximize" id="icon-maximize" viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.1">
+                        <rect x="1.5" y="1.5" width="9" height="9" rx="1.5"></rect>
                     </svg>
-                </div>
-                <span class="theme-label" id="theme-label">Dark</span>
-            </button>
+                    <svg class="icon-restore" id="icon-restore" viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.1" style="display: none;">
+                        <path d="M3.5 1.5h6a1 1 0 0 1 1 1v6" stroke-linecap="round"></path>
+                        <rect x="1.5" y="3.5" width="7" height="7" rx="1.2"></rect>
+                    </svg>
+                </button>
+                <button class="win-btn win-btn-close" id="window-close-btn" type="button" title="Close" aria-label="Close">
+                    <svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round">
+                        <line x1="2" y1="2" x2="10" y2="10"></line>
+                        <line x1="10" y1="2" x2="2" y2="10"></line>
+                    </svg>
+                </button>
+            </div>
         </header>
 
-        <!-- Navigation Tabs -->
-        <nav class="tabs-nav">
-            <button class="nav-tab active" id="hash-tab" data-tab="hash-content">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="4" y1="9" x2="20" y2="9"></line>
-                    <line x1="4" y1="15" x2="20" y2="15"></line>
-                    <line x1="10" y1="3" x2="8" y2="21"></line>
-                    <line x1="16" y1="3" x2="14" y2="21"></line>
-                </svg>
-                <span>Hash Generator</span>
-            </button>
-            <button class="nav-tab" id="compare-tab" data-tab="compare-content">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="2" y="4" width="8" height="16" rx="2"></rect>
-                    <rect x="14" y="4" width="8" height="16" rx="2"></rect>
-                    <path d="M6 12h.01M18 12h.01"></path>
-                </svg>
-                <span>Compare Two Files</span>
-            </button>
-            <button class="nav-tab" id="verify-tab" data-tab="verify-content">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                </svg>
-                <span>Verify Checksums</span>
-            </button>
+        <!-- Secondary Navigation Tabs Bar -->
+        <nav class="tabs-nav" aria-label="Application tabs">
+            <div class="tabs-container">
+                <button class="nav-tab active" id="hash-tab" data-tab="hash-content" type="button">
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="4" y1="9" x2="20" y2="9"></line>
+                        <line x1="4" y1="15" x2="20" y2="15"></line>
+                        <line x1="10" y1="3" x2="8" y2="21"></line>
+                        <line x1="16" y1="3" x2="14" y2="21"></line>
+                    </svg>
+                    <span>Hash Generator</span>
+                </button>
+                <button class="nav-tab" id="compare-tab" data-tab="compare-content" type="button">
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="4" width="8" height="16" rx="2"></rect>
+                        <rect x="14" y="4" width="8" height="16" rx="2"></rect>
+                        <path d="M6 12h.01M18 12h.01"></path>
+                    </svg>
+                    <span>Compare Two Files</span>
+                </button>
+                <button class="nav-tab" id="verify-tab" data-tab="verify-content" type="button">
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                    <span>Verify Checksums</span>
+                </button>
+            </div>
+
+            <div class="tabs-actions">
+                <button class="theme-toggle-btn" id="theme-toggle" type="button" title="Toggle Dark / Light Theme" aria-label="Toggle theme">
+                    <div class="theme-icon-track">
+                        <svg class="theme-icon icon-sun" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                        <svg class="theme-icon icon-moon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                    </div>
+                    <span class="theme-label" id="theme-label">Dark</span>
+                </button>
+            </div>
         </nav>
 
         <!-- Main Workspace -->

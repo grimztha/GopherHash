@@ -17,7 +17,11 @@ import {
     ClipboardSetText,
     OnFileDrop,
     WindowSetLightTheme,
-    WindowSetDarkTheme
+    WindowSetDarkTheme,
+    WindowMinimise,
+    WindowToggleMaximise,
+    WindowIsMaximised,
+    Quit
 } from '../wailsjs/runtime';
 
 // Initialize version badge from backend
@@ -80,6 +84,90 @@ if (themeToggleBtn) {
         applyTheme(currentAppTheme, true);
     });
 }
+
+// ============================================================================
+// Window Controls (Frameless Unified Modern Titlebar)
+// ============================================================================
+const windowMinBtn = document.getElementById('window-min-btn');
+const windowMaxBtn = document.getElementById('window-max-btn');
+const windowCloseBtn = document.getElementById('window-close-btn');
+const iconMaximize = document.getElementById('icon-maximize');
+const iconRestore = document.getElementById('icon-restore');
+const appTitlebar = document.getElementById('app-titlebar');
+
+async function syncMaximizeState() {
+    try {
+        if (typeof WindowIsMaximised === 'function') {
+            const isMax = await WindowIsMaximised();
+            if (isMax) {
+                if (windowMaxBtn) {
+                    windowMaxBtn.setAttribute('title', 'Restore Down');
+                    windowMaxBtn.setAttribute('aria-label', 'Restore Down');
+                }
+                if (iconMaximize) iconMaximize.style.display = 'none';
+                if (iconRestore) iconRestore.style.display = 'block';
+            } else {
+                if (windowMaxBtn) {
+                    windowMaxBtn.setAttribute('title', 'Maximize');
+                    windowMaxBtn.setAttribute('aria-label', 'Maximize');
+                }
+                if (iconMaximize) iconMaximize.style.display = 'block';
+                if (iconRestore) iconRestore.style.display = 'none';
+            }
+        }
+    } catch (e) {
+        // Fallback for non-wails environments
+    }
+}
+
+if (windowMinBtn) {
+    windowMinBtn.addEventListener('click', () => {
+        try {
+            if (typeof WindowMinimise === 'function') WindowMinimise();
+        } catch (e) { }
+    });
+}
+
+if (windowMaxBtn) {
+    windowMaxBtn.addEventListener('click', async () => {
+        try {
+            if (typeof WindowToggleMaximise === 'function') {
+                await WindowToggleMaximise();
+                setTimeout(syncMaximizeState, 60);
+            }
+        } catch (e) { }
+    });
+}
+
+if (windowCloseBtn) {
+    windowCloseBtn.addEventListener('click', () => {
+        try {
+            if (typeof Quit === 'function') Quit();
+        } catch (e) { }
+    });
+}
+
+// Double click titlebar to toggle maximize
+if (appTitlebar) {
+    appTitlebar.addEventListener('dblclick', async (e) => {
+        if (e.target.closest('button, input, select, textarea, a, .no-drag')) {
+            return;
+        }
+        try {
+            if (typeof WindowToggleMaximise === 'function') {
+                await WindowToggleMaximise();
+                setTimeout(syncMaximizeState, 60);
+            }
+        } catch (e) { }
+    });
+}
+
+window.addEventListener('resize', () => {
+    syncMaximizeState();
+});
+
+// Initial state check
+syncMaximizeState();
 
 function setAppStatus(text, isBusy = false) {
     // Retained for compatibility with calculation status triggers
